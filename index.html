@@ -40,20 +40,20 @@
       if (pointNumber !== 5) return;
 
       fetch("https://script.google.com/macros/s/AKfycbzAqi8-0ODIHqwut1EG5rUiMiVrdNP966KfN5maHvv8KKFEysyd76WcmKuiS66Q7sw/exec", {
-  method: "POST",
-  body: JSON.stringify({ point: "Пункт 5" }),
-  headers: {
-    "Content-Type": "application/json"
-  }
-})
-
-      }).then(res => {
+        method: "POST",
+        body: JSON.stringify({ point: "Пункт 5" }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => {
         if (res.ok) {
           alert("Отправлено в таблицу!");
         } else {
           alert("Ошибка отправки!");
         }
-      }).catch(err => {
+      })
+      .catch(err => {
         alert("Ошибка: " + err.message);
       });
     }
