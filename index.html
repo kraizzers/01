@@ -18,7 +18,7 @@
     function sendClick(pointNumber) {
       if (pointNumber !== 5) return; // Только на 5 пункт реагируем
 
-      fetch("ТВОЯ_ССЫЛКА_НА_СКРИПТ", {
+      fetch("https://script.google.com/macros/s/AKfycbwVl_SP5SbIRPcjfmzhImTwexA_wAHn2yybcrsETJEStwVSeTH80toOFqub-I0t/exec", {
         method: "POST",
         body: JSON.stringify({ point: "Пункт 5" }),
         headers: {
