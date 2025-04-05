@@ -1,11 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Кнопки</title>
+  <title>Просто 5 пунктов</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    li:hover {
+      background: #dcdcdc;
+    }
+  </style>
 </head>
 <body>
-  <h3>Просто 5 пунктов</h3>
+  <h2>Просто 5 пунктов</h2>
   <ul>
     <li onclick="sendClick(1)">Пункт 1</li>
     <li onclick="sendClick(2)">Пункт 2</li>
@@ -16,17 +37,22 @@
 
   <script>
     function sendClick(pointNumber) {
-      if (pointNumber !== 5) return; // Только на 5 пункт реагируем
+      if (pointNumber !== 5) return;
 
-      fetch("https://script.google.com/macros/s/AKfycbwVl_SP5SbIRPcjfmzhImTwexA_wAHn2yybcrsETJEStwVSeTH80toOFqub-I0t/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyyRRngP0LIgqpVB7f_Lk-NqqBPwrQEkkatKPMe7AkzPZ9Xk02A9L643nQlFeHD3YU/exec", {
         method: "POST",
         body: JSON.stringify({ point: "Пункт 5" }),
         headers: {
           "Content-Type": "application/json"
         }
       }).then(res => {
-        if (res.ok) alert("Отправлено!");
-        else alert("Ошибка");
+        if (res.ok) {
+          alert("Отправлено в таблицу!");
+        } else {
+          alert("Ошибка отправки!");
+        }
+      }).catch(err => {
+        alert("Ошибка: " + err.message);
       });
     }
   </script>
