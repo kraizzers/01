@@ -88,6 +88,8 @@
   </div>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzonUHkkIHWdus-L4Vx97MDAT2-yOD3V6HpKGhv4qy3RMaJGtq7o5uY3eZGtv0H33I/exec";
+
     function showUserPanel() {
       document.getElementById('main-buttons').classList.add('hidden');
       document.getElementById('user-panel').classList.remove('hidden');
@@ -111,13 +113,17 @@
       const months = Array.from(checkboxes).map(cb => cb.value).join(', ');
       const date = new Date().toLocaleString();
 
-      const entry = { name, months, date };
-      const stored = JSON.parse(localStorage.getItem('payments') || '[]');
-      stored.push(entry);
-      localStorage.setItem('payments', JSON.stringify(stored));
-
-      alert('Спасибо за оплату!');
-      location.reload();
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ name, months, date }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.text())
+      .then(() => {
+        alert('Спасибо за оплату!');
+        location.reload();
+      })
+      .catch(() => alert('Ошибка при отправке. Попробуйте снова.'));
     }
 
     function checkAdmin() {
@@ -133,13 +139,17 @@
     }
 
     function loadPayments() {
-      const payments = JSON.parse(localStorage.getItem('payments') || '[]');
-      const tbody = document.getElementById('payment-list');
-      tbody.innerHTML = '';
-      payments.forEach(p => {
-        const row = `<tr><td>${p.name}</td><td>${p.months}</td><td>${p.date}</td></tr>`;
-        tbody.innerHTML += row;
-      });
+      fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById('payment-list');
+          tbody.innerHTML = '';
+          data.slice(1).forEach(row => {
+            const [name, months, date] = row;
+            const tr = `<tr><td>${name}</td><td>${months}</td><td>${date}</td></tr>`;
+            tbody.innerHTML += tr;
+          });
+        });
     }
   </script>
 </body>
