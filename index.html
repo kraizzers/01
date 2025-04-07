@@ -1,60 +1,144 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Просто 5 пунктов</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Идеальный баннер</title>
   <style>
     body {
       font-family: sans-serif;
-      padding: 30px;
+      background-color: #3b4422;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
     }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 10px;
+    .hidden { display: none; }
+    .button {
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #556b2f;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
       cursor: pointer;
-      padding: 10px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      transition: background 0.2s;
     }
-    li:hover {
-      background: #dcdcdc;
+    select, input[type="checkbox"] {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    .admin-table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 500px;
+    }
+    .admin-table th, .admin-table td {
+      border: 1px solid white;
+      padding: 8px;
+      text-align: left;
     }
   </style>
 </head>
 <body>
-  <h2>Просто 5 пунктов</h2>
-  <ul>
-    <li onclick="sendClick(1)">Пункт 1</li>
-    <li onclick="sendClick(2)">Пункт 2</li>
-    <li onclick="sendClick(3)">Пункт 3</li>
-    <li onclick="sendClick(4)">Пункт 4</li>
-    <li onclick="sendClick(5)">Пункт 5</li>
-  </ul>
+  <h1>Идеальный баннер</h1>
+  <div id="main-buttons">
+    <button class="button" onclick="showUserPanel()">Участник</button>
+    <button class="button" onclick="showLogin()">Админ</button>
+  </div>
+
+  <!-- Участник -->
+  <div id="user-panel" class="hidden">
+    <h2>Выберите имя</h2>
+    <select id="user-name">
+      <option value="">-- выбрать --</option>
+      <option value="Алтынай Алматы">Алтынай Алматы</option>
+      <option value="Гаухар шары">Гаухар шары</option>
+      <option value="Жанар Алматы">Жанар Алматы</option>
+    </select>
+
+    <h3>За какие месяцы:</h3>
+    <label><input type="checkbox" value="Январь"> Январь</label><br>
+    <label><input type="checkbox" value="Февраль"> Февраль</label><br>
+    <label><input type="checkbox" value="Март"> Март</label><br>
+    <label><input type="checkbox" value="Апрель"> Апрель</label><br>
+
+    <button class="button" onclick="payNow()">Оплатить</button>
+    <button id="confirm-paid" class="button hidden" onclick="submitPayment()">Я оплатил</button>
+  </div>
+
+  <!-- Админ -->
+  <div id="admin-login" class="hidden">
+    <h2>Вход для админа</h2>
+    <input id="admin-user" placeholder="Логин" />
+    <input id="admin-pass" placeholder="Пароль" type="password" />
+    <button class="button" onclick="checkAdmin()">Войти</button>
+  </div>
+
+  <div id="admin-panel" class="hidden">
+    <h2>Оплаты</h2>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Имя</th><th>Месяцы</th><th>Дата</th></tr>
+      </thead>
+      <tbody id="payment-list"></tbody>
+    </table>
+  </div>
 
   <script>
-    function sendClick(pointNumber) {
-      if (pointNumber !== 5) return;
+    function showUserPanel() {
+      document.getElementById('main-buttons').classList.add('hidden');
+      document.getElementById('user-panel').classList.remove('hidden');
+    }
 
-      fetch("https://script.google.com/macros/s/AKfycbwoPm_W_AfRk0-1fwmeyLcvBwlixhh5f_tU9_1ViM-1c3fhYN7u3DXmxplmNTQrGwY/exec", {
-        method: "POST",
-        body: JSON.stringify({ point: "Пункт 5" }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => {
-        if (res.ok) {
-          alert("Отправлено в таблицу!");
-        } else {
-          alert("Ошибка отправки!");
-        }
-      })
-      .catch(err => {
-        alert("Ошибка: " + err.message);
+    function showLogin() {
+      document.getElementById('main-buttons').classList.add('hidden');
+      document.getElementById('admin-login').classList.remove('hidden');
+    }
+
+    function payNow() {
+      const name = document.getElementById('user-name').value;
+      if (!name) return alert('Выберите имя');
+      window.open('https://pay.kaspi.kz/pay/ecgq6kmy', '_blank');
+      document.getElementById('confirm-paid').classList.remove('hidden');
+    }
+
+    function submitPayment() {
+      const name = document.getElementById('user-name').value;
+      const checkboxes = document.querySelectorAll('#user-panel input[type="checkbox"]:checked');
+      const months = Array.from(checkboxes).map(cb => cb.value).join(', ');
+      const date = new Date().toLocaleString();
+
+      const entry = { name, months, date };
+      const stored = JSON.parse(localStorage.getItem('payments') || '[]');
+      stored.push(entry);
+      localStorage.setItem('payments', JSON.stringify(stored));
+
+      alert('Спасибо за оплату!');
+      location.reload();
+    }
+
+    function checkAdmin() {
+      const user = document.getElementById('admin-user').value;
+      const pass = document.getElementById('admin-pass').value;
+      if (user === 'Admin' && pass === '3003') {
+        document.getElementById('admin-login').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        loadPayments();
+      } else {
+        alert('Неверный логин или пароль');
+      }
+    }
+
+    function loadPayments() {
+      const payments = JSON.parse(localStorage.getItem('payments') || '[]');
+      const tbody = document.getElementById('payment-list');
+      tbody.innerHTML = '';
+      payments.forEach(p => {
+        const row = `<tr><td>${p.name}</td><td>${p.months}</td><td>${p.date}</td></tr>`;
+        tbody.innerHTML += row;
       });
     }
   </script>
